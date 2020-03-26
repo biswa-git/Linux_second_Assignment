@@ -13,7 +13,7 @@ int main()//int argc, char const *argv[]
     m.LaplaceSmoother();
 //---------------------------------//
     auto meshData1=m.GetMeshData();
-    std::ofstream fileOut("../output/testTI.dat");
+    std::ofstream fileOut("../output/test.dat");
     for (int j = 0; j < 100; ++j)
     {
         for (int i = 0; i < 100; ++i)
