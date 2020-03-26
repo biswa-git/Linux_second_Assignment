@@ -8,20 +8,34 @@ int main()//int argc, char const *argv[]
     auto k = c.PointAt(.65);
     mesh::mesh m;
     m.Read("../input/test3.dat");
+
+//---------------------------------//
     m.LaplaceSmoother();
-
-    m.TransFiniteInterpolator();
-    auto meshData=m.GetMeshData();
+//---------------------------------//
+    auto meshData1=m.GetMeshData();
     std::ofstream fileOut("../output/testTI.dat");
-
     for (int j = 0; j < 100; ++j)
     {
         for (int i = 0; i < 100; ++i)
         {
-            fileOut <<meshData[j][i].GetX()<<" "<<meshData[j][i].GetY()<<" "<<meshData[j][i].GetZ() <<std::endl;
+            fileOut <<meshData1[j][i].GetX()<<" "<<meshData1[j][i].GetY()<<" "<<meshData1[j][i].GetZ() <<std::endl;
+        }
+    }
+    fileOut.close();
+
+//---------------------------------//
+    m.TransFiniteInterpolator();
+//---------------------------------//
+
+    auto meshData2=m.GetMeshData();
+    fileOut.open("../output/testTI.dat");
+    for (int j = 0; j < 100; ++j)
+    {
+        for (int i = 0; i < 100; ++i)
+        {
+            fileOut <<meshData2[j][i].GetX()<<" "<<meshData2[j][i].GetY()<<" "<<meshData2[j][i].GetZ() <<std::endl;
         }
     }
 
-    m.TransFiniteInterpolator();
     return 0;
 }
