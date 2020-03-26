@@ -182,8 +182,8 @@ void mesh::mesh::TransFiniteInterpolator()
     {
         for(size_t i=0; i<sizeX; ++i)
         {
-            double u = c1.GetParameterAt(i)*(1-(dx*i)) + c3.GetParameterAt(i)*(dx*i);
-            double v = c2.GetParameterAt(j)*(1-(dy*j)) + c4.GetParameterAt(j)*(dy*j);
+            double u = c1.GetParameterAt(i)*(1-(dy*j)) + c3.GetParameterAt(i)*(dy*j);
+            double v = c2.GetParameterAt(j)*(1-(dx*i)) + c4.GetParameterAt(j)*(dx*i);
 
             meshData[j][i] = (c1.PointAt(u) * (1 - v)) + (c3.PointAt(u) * v) + (c2.PointAt(v) * (1 - u)) + (c4.PointAt(v) * u)
                            - ((p12 * ((1 - u) * (1 - v))) + (p34 * (u * v)) + (p14 * (u * (1 - v))) + (p32 * ((1 - u) * v)));
