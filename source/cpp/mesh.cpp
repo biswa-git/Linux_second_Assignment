@@ -86,8 +86,8 @@ void mesh::mesh::LaplaceSmoother()
 
     Eigen::VectorXd bx(size), by(size), bz(size);
     bx.setZero();
-    bx.setZero();
-    bx.setZero();
+    by.setZero();
+    bz.setZero();
 
     for(size_t j=1; j<(sizeY-1); ++j)
     {
