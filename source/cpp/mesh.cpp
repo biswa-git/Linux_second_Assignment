@@ -92,22 +92,27 @@ void mesh::mesh::LaplaceSmoother()
     size_t it = 0;
     while (error>tolerance)
     {
+		//Gauss Seidel with over relaxation
         error = 0;
         for(size_t j=1; j<(sizeY-1); ++j)
         {
             for(size_t i=1; i<(sizeX-1); ++i)
             {
                 auto RelaxationFactor = 1.96;
+
                 auto tempX = meshData[j][i].GetX();
                 auto tempY = meshData[j][i].GetY();
                 auto tempZ = meshData[j][i].GetZ();
+
                 auto incrX = 0.25*(meshData[j][i+1].GetX()+meshData[j][i-1].GetX()+meshData[j+1][i].GetX()+meshData[j-1][i].GetX()) - tempX;
                 auto incrY = 0.25*(meshData[j][i+1].GetY()+meshData[j][i-1].GetY()+meshData[j+1][i].GetY()+meshData[j-1][i].GetY()) - tempY;
                 auto incrZ = 0.25*(meshData[j][i+1].GetZ()+meshData[j][i-1].GetZ()+meshData[j+1][i].GetZ()+meshData[j-1][i].GetZ()) - tempZ;
-                meshData[j][i].SetX(tempX+RelaxationFactor*incrX);
+                
+				meshData[j][i].SetX(tempX+RelaxationFactor*incrX);
                 meshData[j][i].SetY(tempY+RelaxationFactor*incrY);
                 meshData[j][i].SetZ(tempZ+RelaxationFactor*incrZ);
 
+				//I'm calculating absolute error. Relative error calculation is better option
                 error += (tempX - meshData[j][i].GetX())*(tempX - meshData[j][i].GetX());
                 error += (tempY - meshData[j][i].GetY())*(tempY - meshData[j][i].GetY());
                 error += (tempZ - meshData[j][i].GetZ())*(tempZ - meshData[j][i].GetZ());
@@ -115,6 +120,7 @@ void mesh::mesh::LaplaceSmoother()
         }
         error = sqrt(error);
         ++it;
+
         if(it%1000 == 0) std::cout << "Iteration number: " << it << "; Error: " << error <<std::endl;
     }
     std::cout << "Iteration number: " << it << "; Error: " << error <<std::endl;

@@ -3,10 +3,21 @@
 int main()//int argc, char const *argv[]
 {
     mesh::curve c1,c2,c3,c4,c5;
+
+/*
+        c3
+    ----->-------
+    |           |
+ c2 ^           ^ c4,c5
+    |           |
+    ------>------
+         c1
+*/
     c1.Read("../input/curve1.dat");
     c2.Read("../input/curve2.dat");
     c3.Read("../input/curve3.dat");
     c4.Read("../input/curve4.dat");
+	c5.Read("../input/curve5.dat");
 
     mesh::mesh m(80,80);
     m.SetBoundingCurve(c1,c2,c3,c4);
@@ -26,7 +37,6 @@ int main()//int argc, char const *argv[]
     }
     fileOut.close();
 
-    c5.Read("../input/curve5.dat");
     m.SetBoundingCurve(c1,c2,c3,c5);
 //---------------------------------//
     m.TransFiniteInterpolator();
