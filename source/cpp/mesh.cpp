@@ -129,6 +129,7 @@ void mesh::mesh::LaplaceSmoother()
 
 void mesh::mesh::TransFiniteInterpolator()
 {
+	//I didn't changed anything here 30.03.20 
     curve c1, c2, c3, c4;
     for(size_t i=0; i<sizeX; ++i)
     {
@@ -145,6 +146,11 @@ void mesh::mesh::TransFiniteInterpolator()
         c2.InsertPoint(p2);
         c4.InsertPoint(p4);
     }
+
+    c1.Parameterize();
+    c2.Parameterize();
+    c3.Parameterize();
+    c4.Parameterize();
 
     point p12 = meshData[0][0];
     point p32 = meshData[sizeY-1][0];
