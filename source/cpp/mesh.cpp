@@ -92,6 +92,7 @@ void mesh::mesh::LaplaceSmoother()
     size_t it = 0;
     while (error>tolerance)
     {
+		// I added linear solver
 		//Gauss Seidel with over relaxation
         error = 0;
         for(size_t j=1; j<(sizeY-1); ++j)
