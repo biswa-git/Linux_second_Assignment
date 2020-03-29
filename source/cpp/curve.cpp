@@ -34,6 +34,7 @@ void mesh::curve::InsertPoint(mesh::point& pointData)
 
 void mesh::curve::Parameterize()
 {
+    if(isParameterized) return;
     double length = 0.0;
     parameterizeData.push_back(length);
     for(size_t i = 1; i < curveData.size(); ++i)
@@ -51,6 +52,22 @@ void mesh::curve::Parameterize()
     isParameterized = true;
 }
 
+bool mesh::curve::Intersect(mesh::curve& c)
+{
+    auto p1 = this->PointAt(0);
+    auto p2 = this->PointAt(1);
+    auto p3 = c.PointAt(0);
+    auto p4 = c.PointAt(1);
+
+    if(p1==p3 || p1==p4 || p2==p3 || p2==p4)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
 
 double mesh::curve::GetParameterAt(const size_t& i)
 {
@@ -75,6 +92,7 @@ mesh::point mesh::curve::PointAt(const double& p)
             rightPos = currentPos;
         }
     }
+
     auto fraction = (p-parameterizeData[leftPos])/(parameterizeData[rightPos]-parameterizeData[leftPos]);
 
     return curveData[leftPos]*(1.0-fraction) + curveData[rightPos]*fraction;

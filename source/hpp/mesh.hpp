@@ -9,9 +9,11 @@ namespace mesh
     class mesh
     {
     public:
-        mesh();
+        mesh(size_t = 0, size_t = 0);
         ~mesh();
-        void Read(const std::string&);
+        void SetBoundingCurve(curve&, curve&, curve&, curve&);
+        size_t GetSizeX();
+        size_t GetSizeY();
         node** AdjNodes(node*,const size_t&);
         void LaplaceSmoother();
         void TransFiniteInterpolator();
@@ -20,5 +22,6 @@ namespace mesh
     private:
         size_t sizeX, sizeY;
         node** meshData;
+        std::vector<curve> boundingCurve;
     };
 }

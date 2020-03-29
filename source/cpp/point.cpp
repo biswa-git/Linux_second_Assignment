@@ -10,11 +10,6 @@ mesh::point::point(const double& x, const double& y, const double& z):x(x),y(y),
 
 }
 
-mesh::point::~point()
-{
-
-}
-
 void mesh::point::SetX(const double& _x)
 {
     x = _x;
@@ -68,4 +63,16 @@ mesh::point mesh::point::operator*(const double& multiplier)
     result.SetY(multiplier*this->y);
     result.SetZ(multiplier*this->z);
     return result;
+}
+
+bool mesh::point::operator==(const point& p)
+{
+    if( fabs(x-p.x)<1e-12 && fabs(y-p.y)<1e-12 && fabs(z-p.z)<1e-12 )
+    {
+        return true;
+    }
+    else
+    {
+        return  false;
+    }
 }

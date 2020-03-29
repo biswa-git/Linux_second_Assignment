@@ -12,6 +12,7 @@ namespace mesh
         void Read(const std::string&);
         void InsertPoint(point&);
         void Parameterize();
+        bool Intersect(curve&);
         double GetParameterAt(const size_t&);
         point PointAt(const double&);
     private:

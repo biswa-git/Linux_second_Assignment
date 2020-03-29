@@ -1,30 +1,7 @@
 #include<mesh.hpp>
 
-mesh::mesh::mesh(): sizeX(0), sizeY(0), meshData(nullptr)
+mesh::mesh::mesh(size_t sizeX, size_t sizeY): sizeX(sizeX), sizeY(sizeY), meshData(nullptr)
 {
-}
-
-mesh::mesh::~mesh()
-{
-    if(meshData != nullptr)
-    {
-        for(size_t i=0; i<sizeX; ++i)
-        {
-            if(meshData[i] != nullptr) delete[] meshData[i];
-        }
-        delete meshData;
-    }
-}
-
-void mesh::mesh::Read(const std::string& fileName)
-{
-    std::ifstream fileIn(fileName.c_str());
-    if (!fileIn.is_open()) std::cout << "not open" << std::endl;
-
-    double coord[3]{ 0,0,0 };
-
-    fileIn >> sizeX >> sizeY;
-
     meshData = new node*[sizeY];
 
     for(size_t j=0; j<sizeY; ++j)
@@ -32,16 +9,59 @@ void mesh::mesh::Read(const std::string& fileName)
         meshData[j] = new node[sizeX];
         for(size_t i=0; i<sizeX; ++i)
         {
-            fileIn >> coord[0] >> coord[1] >> coord[2];
-            meshData[j][i].SetX(coord[0]);
-            meshData[j][i].SetY(coord[1]);
-            meshData[j][i].SetZ(coord[2]);
+            meshData[j][i].SetX(0);
+            meshData[j][i].SetY(0);
+            meshData[j][i].SetZ(0);
             meshData[j][i].SetI(i);
             meshData[j][i].SetJ(j);
         }
     }
 }
 
+mesh::mesh::~mesh()
+{
+    if(meshData != nullptr)
+    {
+        for(size_t j=0; j<sizeY; ++j)
+        {
+            if(meshData[j] != nullptr) delete[] meshData[j];
+        }
+        delete meshData;
+    }
+}
+
+void mesh::mesh::SetBoundingCurve(curve& c1,curve& c2,curve& c3,curve& c4)
+{
+    c1.Parameterize();
+    c2.Parameterize();
+    c3.Parameterize();
+    c4.Parameterize();
+
+    if(c1.Intersect(c2) && c1.Intersect(c4) && c3.Intersect(c2) && c1.Intersect(c4))
+    {
+        double dx = 1.0/(sizeX-1);
+        double dy = 1.0/(sizeY-1);
+        for(size_t i=0; i<sizeX; ++i)
+        {
+            meshData[0][i] = c1.PointAt(i*dx);
+            meshData[sizeY-1][i] = c3.PointAt(i*dx);
+        }
+        for(size_t j=0; j<sizeY; ++j)
+        {
+            meshData[j][0] = c2.PointAt(j*dy);
+            meshData[j][sizeX-1] = c4.PointAt(j*dy);
+        }
+    }
+}
+size_t mesh::mesh::GetSizeX()
+{
+    return sizeX;
+}
+
+size_t mesh::mesh::GetSizeY()
+{
+    return sizeY;
+}
 
 mesh::node** mesh::mesh::AdjNodes(node* n,const size_t& size)
 {
@@ -67,83 +87,38 @@ mesh::node** mesh::mesh::AdjNodes(node* n,const size_t& size)
 
 void mesh::mesh::LaplaceSmoother()
 {
-    size_t size = (sizeX-2)*(sizeY-2); // NUMBER OF UNKNOWN
-    Eigen::SparseMatrix<double,Eigen::RowMajor> A(static_cast<int>(size),static_cast<int>(size));
-
-    for(size_t j=1; j<(sizeY-1); ++j)
+    double tolerance = 10e-10;
+    double error = 10*tolerance;
+    size_t it = 0;
+    while (error>tolerance)
     {
-        for(size_t i=1; i<(sizeX-1); ++i)
+        error = 0;
+        for(size_t j=1; j<(sizeY-1); ++j)
         {
-            int index = static_cast<int>((j-1)*(sizeX-2)+(i-1));
+            for(size_t i=1; i<(sizeX-1); ++i)
+            {
+                auto RelaxationFactor = 1.96;
+                auto tempX = meshData[j][i].GetX();
+                auto tempY = meshData[j][i].GetY();
+                auto tempZ = meshData[j][i].GetZ();
+                auto incrX = 0.25*(meshData[j][i+1].GetX()+meshData[j][i-1].GetX()+meshData[j+1][i].GetX()+meshData[j-1][i].GetX()) - tempX;
+                auto incrY = 0.25*(meshData[j][i+1].GetY()+meshData[j][i-1].GetY()+meshData[j+1][i].GetY()+meshData[j-1][i].GetY()) - tempY;
+                auto incrZ = 0.25*(meshData[j][i+1].GetZ()+meshData[j][i-1].GetZ()+meshData[j+1][i].GetZ()+meshData[j-1][i].GetZ()) - tempZ;
+                meshData[j][i].SetX(tempX+RelaxationFactor*incrX);
+                meshData[j][i].SetY(tempY+RelaxationFactor*incrY);
+                meshData[j][i].SetZ(tempZ+RelaxationFactor*incrZ);
 
-            A.coeffRef(index,index) = -4.0;
-            if(i!=1)         A.coeffRef(index,index-1) = 1.0;
-            if(i!=(sizeX-2)) A.coeffRef(index,index+1) = 1.0;
-            if(j!=1)         A.coeffRef(index,index-static_cast<int>(sizeX-2)) = 1.0;
-            if(j!=(sizeY-2)) A.coeffRef(index,index+static_cast<int>(sizeX-2)) = 1.0;
-        }
-    }
-
-    Eigen::VectorXd bx(size), by(size), bz(size);
-    bx.setZero();
-    bx.setZero();
-    bx.setZero();
-
-    for(size_t j=1; j<(sizeY-1); ++j)
-    {
-        for(size_t i=1; i<(sizeX-1); ++i)
-        {
-            int index = static_cast<int>((j-1)*(sizeX-2)+(i-1));
-            if(i==1)
-            {
-                bx(index) -= meshData[j][i-1].GetX();
-                by(index) -= meshData[j][i-1].GetY();
-                bz(index) -= meshData[j][i-1].GetZ();
-            }
-            if(i==(sizeX-2))
-            {
-                bx(index) -= meshData[j][i+1].GetX();
-                by(index) -= meshData[j][i+1].GetY();
-                bz(index) -= meshData[j][i+1].GetZ();
-            }
-            if(j==1)
-            {
-                bx(index) -= meshData[j-1][i].GetX();
-                by(index) -= meshData[j-1][i].GetY();
-                bz(index) -= meshData[j-1][i].GetZ();
-            }
-            if(j==(sizeY-2))
-            {
-                bx(index) -= meshData[j+1][i].GetX();
-                by(index) -= meshData[j+1][i].GetY();
-                bz(index) -= meshData[j+1][i].GetZ();
+                error += (tempX - meshData[j][i].GetX())*(tempX - meshData[j][i].GetX());
+                error += (tempY - meshData[j][i].GetY())*(tempY - meshData[j][i].GetY());
+                error += (tempZ - meshData[j][i].GetZ())*(tempZ - meshData[j][i].GetZ());
             }
         }
+        error = sqrt(error);
+        ++it;
+        if(it%1000 == 0) std::cout << "Iteration number: " << it << "; Error: " << error <<std::endl;
     }
+    std::cout << "Iteration number: " << it << "; Error: " << error <<std::endl;
 
-    Eigen::BiCGSTAB<Eigen::SparseMatrix<double,Eigen::RowMajor>, Eigen::IncompleteLUT<double> > solver;
-    solver.setTolerance(1e-10);
-    solver.setMaxIterations(10000);
-    solver.compute(A);
-    Eigen::VectorXd x = solver.solve(bx);
-    Eigen::VectorXd y = solver.solve(by);
-    Eigen::VectorXd z = solver.solve(bz);
-
-    for(size_t j=1; j<(sizeY-1); ++j)
-    {
-        for(size_t i=1; i<(sizeX-1); ++i)
-        {
-            int index = static_cast<int>((j-1)*(sizeX-2)+(i-1));
-
-            auto xVal=x[index];
-            auto yVal=y[index];
-            auto zVal=z[index];
-
-            meshData[j][i].SetX(xVal);
-            meshData[j][i].SetY(yVal);
-            meshData[j][i].SetZ(zVal);
-        }
-    }
 }
 
 void mesh::mesh::TransFiniteInterpolator()

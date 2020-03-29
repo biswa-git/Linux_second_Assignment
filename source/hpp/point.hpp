@@ -7,7 +7,7 @@ namespace mesh
     public:
         point();
         point(const double&, const double&, const double&);
-        ~point();
+        ~point() = default;
 
         void SetX(const double&);
         double GetX() const;
@@ -19,6 +19,7 @@ namespace mesh
         point operator+(const point&);
         point operator-(const point&);
         point operator*(const double&);
+        bool operator==(const point&);
 
     protected:
         double x,y,z;
