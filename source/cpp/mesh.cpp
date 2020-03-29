@@ -146,11 +146,6 @@ void mesh::mesh::TransFiniteInterpolator()
         c4.InsertPoint(p4);
     }
 
-    c1.Parameterize();
-    c2.Parameterize();
-    c3.Parameterize();
-    c4.Parameterize();
-
     point p12 = meshData[0][0];
     point p32 = meshData[sizeY-1][0];
     point p34 = meshData[sizeY-1][sizeX-1];
