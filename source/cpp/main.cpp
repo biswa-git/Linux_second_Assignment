@@ -21,18 +21,22 @@ int main()//int argc, char const *argv[]
 	c5.Read("../input/curve5.dat");
 
 	mesh::mesh m(80,80);
-    m.SetBoundingCurve(c1,c2,c3,c4);
-
+	m.SetBoundingCurve(c1, c2, c3, c4);
+	//we need to put the curve in such way that adjacent curce intersect
+	//m.SetBoundingCurve(c3, c2, c1, c4); //valid
+	//m.SetBoundingCurve(c4, c1, c2, c3); //valid
+	//m.SetBoundingCurve(c4, c2, c1, c3); //invalid, since c4, c2 doesn't intersect
+	//we need to do additional checks to detect opposite curve to make the process more elegant
 //---------------------------------//
     m.LaplaceSmoother();
 //---------------------------------//
     auto meshData1=m.GetMeshData();
     std::ofstream fileOut("../output/LaplaceSmoother1.dat");
 	//tecPlot format
-	//fileOut << "TITLE = \"Example: Multi-Zone\""<<std::endl;
-	//fileOut << "VARIABLES = \"X\", \"Y\", \"Z\""<<std::endl;
-	//fileOut << "ZONE I = "<<m.GetSizeX()<<", J = "<<m.GetSizeY()<<", K = 1" <<std::endl;
-    fileOut << m.GetSizeX() << " " << m.GetSizeY() <<std::endl;
+	fileOut << "TITLE = \"Example: Multi-Zone\""<<std::endl;
+	fileOut << "VARIABLES = \"X\", \"Y\", \"Z\""<<std::endl;
+	fileOut << "ZONE I = "<<m.GetSizeX()<<", J = "<<m.GetSizeY()<<", K = 1" <<std::endl;
+    //fileOut << m.GetSizeX() << " " << m.GetSizeY() <<std::endl;
     for (int j = 0; j < m.GetSizeY(); ++j)
     {
         for (int i = 0; i < m.GetSizeX(); ++i)
