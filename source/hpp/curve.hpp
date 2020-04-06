@@ -1,7 +1,7 @@
 #pragma once
 #include<essential>
 #include<point.hpp>
-
+#include<vector.hpp>
 namespace mesh
 {
     class curve
@@ -12,7 +12,7 @@ namespace mesh
         void Read(const std::string&);
         void InsertPoint(point&);
         void Parameterize();
-        bool Intersect(curve&);
+        double Intersect(curve&);
         double GetParameterAt(const size_t&);
         point PointAt(const double&);
     private:

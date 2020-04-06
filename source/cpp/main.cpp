@@ -1,9 +1,10 @@
 #include<curve.hpp>
 #include<mesh.hpp>
+#include<vector.hpp>
 int main()//int argc, char const *argv[]
 {
-    mesh::curve c1,c2,c3,c4,c5;
-
+	mesh::curve c1, c2, c3, c4, c5;
+	
 /*
         c3
     ----->-------
@@ -19,7 +20,7 @@ int main()//int argc, char const *argv[]
     c4.Read("../input/curve4.dat");
 	c5.Read("../input/curve5.dat");
 
-    mesh::mesh m(80,80);
+	mesh::mesh m(80,80);
     m.SetBoundingCurve(c1,c2,c3,c4);
 
 //---------------------------------//
@@ -27,6 +28,10 @@ int main()//int argc, char const *argv[]
 //---------------------------------//
     auto meshData1=m.GetMeshData();
     std::ofstream fileOut("../output/LaplaceSmoother1.dat");
+	//tecPlot format
+	//fileOut << "TITLE = \"Example: Multi-Zone\""<<std::endl;
+	//fileOut << "VARIABLES = \"X\", \"Y\", \"Z\""<<std::endl;
+	//fileOut << "ZONE I = "<<m.GetSizeX()<<", J = "<<m.GetSizeY()<<", K = 1" <<std::endl;
     fileOut << m.GetSizeX() << " " << m.GetSizeY() <<std::endl;
     for (int j = 0; j < m.GetSizeY(); ++j)
     {
@@ -44,7 +49,10 @@ int main()//int argc, char const *argv[]
 
     auto meshData2=m.GetMeshData();
     fileOut.open("../output/TransfiniteInterpolator.dat");
-    fileOut << m.GetSizeX() << " " << m.GetSizeY() <<std::endl;
+	//fileOut << "TITLE = \"Example: Multi-Zone\""<<std::endl;
+	//fileOut << "VARIABLES = \"X\", \"Y\", \"Z\""<<std::endl;
+	//fileOut << "ZONE I = "<<m.GetSizeX()<<", J = "<<m.GetSizeY()<<", K = 1" <<std::endl;
+	fileOut << m.GetSizeX() << " " << m.GetSizeY() << std::endl;
     for (int j = 0; j < m.GetSizeY(); ++j)
     {
         for (int i = 0; i < m.GetSizeX(); ++i)
@@ -58,7 +66,10 @@ int main()//int argc, char const *argv[]
     //---------------------------------//
         auto meshData3=m.GetMeshData();
         fileOut.open("../output/LaplaceSmoother2.dat");
-        fileOut << m.GetSizeX() << " " << m.GetSizeY() <<std::endl;
+		//fileOut << "TITLE = \"Example: Multi-Zone\""<<std::endl;
+		//fileOut << "VARIABLES = \"X\", \"Y\", \"Z\""<<std::endl;
+		//fileOut << "ZONE I = "<<m.GetSizeX()<<", J = "<<m.GetSizeY()<<", K = 1" <<std::endl;
+		fileOut << m.GetSizeX() << " " << m.GetSizeY() << std::endl;
         for (int j = 0; j < m.GetSizeY(); ++j)
         {
             for (int i = 0; i < m.GetSizeX(); ++i)

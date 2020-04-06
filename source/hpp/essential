@@ -13,7 +13,7 @@
 #include <string>
 #include <typeinfo>
 #include <vector>
-
+#define EPS 1e-12
 //-----------------------------------------------------------------
 
 

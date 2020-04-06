@@ -2,7 +2,6 @@
 #include<essential>
 #include<node.hpp>
 #include<curve.hpp>
-#include<Eigen/Sparse>
 
 namespace mesh
 {

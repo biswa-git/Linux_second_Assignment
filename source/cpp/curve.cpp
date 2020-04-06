@@ -25,6 +25,7 @@ void mesh::curve::Read(const std::string& fileName)
         curveData.emplace_back(pointData);
     }
     isRead = true;
+	Parameterize();
 }
 
 void mesh::curve::InsertPoint(mesh::point& pointData)
@@ -52,21 +53,44 @@ void mesh::curve::Parameterize()
     isParameterized = true;
 }
 
-bool mesh::curve::Intersect(mesh::curve& c)
+double mesh::curve::Intersect(mesh::curve& c)
 {
-    auto p1 = this->PointAt(0);
-    auto p2 = this->PointAt(1);
-    auto p3 = c.PointAt(0);
-    auto p4 = c.PointAt(1);
+	for (size_t i = 0; i < this->curveData.size() - 1; i++)
+	{
+		for (size_t j = 0; j < c.curveData.size() - 1; j++)
+		{
+			auto line1Start = this->curveData[i];
+			auto line1End = this->curveData[i + 1];
+			auto line2Start = c.curveData[j];
+			auto line2End = c.curveData[j + 1];
+			auto dir1 = mesh::CrossProd(line1Start, line2Start, line1End).Unit();
+			auto dir2 = mesh::CrossProd(line1End, line2End, line1Start).Unit();
+			auto dir3 = mesh::CrossProd(line2Start, line1Start, line2End).Unit();
+			auto dir4 = mesh::CrossProd(line2End, line1End, line2Start).Unit();
 
-    if(p1==p3 || p1==p4 || p2==p3 || p2==p4)
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+			if (dir1.Abs() < EPS || dir2.Abs() < EPS || dir3.Abs() < EPS || dir4.Abs() < EPS || ((dir1 == dir2) && (dir3 == dir4)))// if true then two lines intersects
+			{
+				vector p2_p1(line1Start, line2Start);
+				vector line1(line1Start, line1End);
+				vector line2(line2Start, line2End);
+				vector v1 = line1.Unit();
+				vector v2 = line2.Unit();
+
+				auto a = (p2_p1 ^ v2).Abs()/ (v1 ^ v2).Abs();
+				return this->parameterizeData[i] + (this->parameterizeData[i + 1] - this->parameterizeData[i]) * a / line1.Abs();
+				/*
+				point intersectionPoint(
+					line1Start.GetX() + a * v1.GetDx(),
+					line1Start.GetY() + a * v1.GetDy(),
+					line1Start.GetZ() + a * v1.GetDz());
+				return intersectionPoint;
+				*/
+
+			}
+		}
+	}
+	std::cerr << "No intersection found. Exiting..." << std::endl;
+	exit(EXIT_FAILURE);
 }
 
 double mesh::curve::GetParameterAt(const size_t& i)

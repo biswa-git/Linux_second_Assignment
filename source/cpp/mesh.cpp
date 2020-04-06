@@ -32,24 +32,22 @@ mesh::mesh::~mesh()
 
 void mesh::mesh::SetBoundingCurve(curve& c1,curve& c2,curve& c3,curve& c4)
 {
-    c1.Parameterize();
-    c2.Parameterize();
-    c3.Parameterize();
-    c4.Parameterize();
-
-    if(c1.Intersect(c2) && c1.Intersect(c4) && c3.Intersect(c2) && c1.Intersect(c4))
+    //if(c1.Intersect(c2) && c1.Intersect(c4) && c3.Intersect(c2) && c1.Intersect(c4))
     {
-        double dx = 1.0/(sizeX-1);
-        double dy = 1.0/(sizeY-1);
+		double c1dx = (c1.Intersect(c4) - c1.Intersect(c2)) / (sizeX - 1);
+		double c3dx = (c3.Intersect(c4) - c3.Intersect(c2)) / (sizeX - 1);
+		double c2dx = (c2.Intersect(c3) - c2.Intersect(c1)) / (sizeY - 1);
+		double c4dx = (c4.Intersect(c3) - c4.Intersect(c1)) / (sizeY - 1);
+		
         for(size_t i=0; i<sizeX; ++i)
         {
-            meshData[0][i] = c1.PointAt(i*dx);
-            meshData[sizeY-1][i] = c3.PointAt(i*dx);
+            meshData[0][i] = c1.PointAt(c1.Intersect(c2)+ i* c1dx);
+            meshData[sizeY-1][i] = c3.PointAt(c3.Intersect(c2) + i * c3dx);
         }
         for(size_t j=0; j<sizeY; ++j)
         {
-            meshData[j][0] = c2.PointAt(j*dy);
-            meshData[j][sizeX-1] = c4.PointAt(j*dy);
+            meshData[j][0] = c2.PointAt(c2.Intersect(c1) + j * c2dx);
+            meshData[j][sizeX-1] = c4.PointAt(c4.Intersect(c1) + j * c4dx);
         }
     }
 }
