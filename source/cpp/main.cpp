@@ -33,10 +33,10 @@ int main()//int argc, char const *argv[]
     auto meshData1=m.GetMeshData();
     std::ofstream fileOut("../output/LaplaceSmoother1.dat");
 	//tecPlot format
-	fileOut << "TITLE = \"Example: Multi-Zone\""<<std::endl;
-	fileOut << "VARIABLES = \"X\", \"Y\", \"Z\""<<std::endl;
-	fileOut << "ZONE I = "<<m.GetSizeX()<<", J = "<<m.GetSizeY()<<", K = 1" <<std::endl;
-    //fileOut << m.GetSizeX() << " " << m.GetSizeY() <<std::endl;
+	//fileOut << "TITLE = \"Example: Multi-Zone\""<<std::endl;
+	//fileOut << "VARIABLES = \"X\", \"Y\", \"Z\""<<std::endl;
+	//fileOut << "ZONE I = "<<m.GetSizeX()<<", J = "<<m.GetSizeY()<<", K = 1" <<std::endl;
+    fileOut << m.GetSizeX() << " " << m.GetSizeY() <<std::endl;
     for (int j = 0; j < m.GetSizeY(); ++j)
     {
         for (int i = 0; i < m.GetSizeX(); ++i)
