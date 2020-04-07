@@ -38,7 +38,7 @@ void mesh::mesh::SetBoundingCurve(curve& c1,curve& c2,curve& c3,curve& c4)
 		double c3dx = (c3.Intersect(c4) - c3.Intersect(c2)) / (sizeX - 1);
 		double c2dx = (c2.Intersect(c3) - c2.Intersect(c1)) / (sizeY - 1);
 		double c4dx = (c4.Intersect(c3) - c4.Intersect(c1)) / (sizeY - 1);
-		
+		//ASSUMING EQUAL SPACING
         for(size_t i=0; i<sizeX; ++i)
         {
             meshData[0][i] = c1.PointAt(c1.Intersect(c2)+ i* c1dx);
